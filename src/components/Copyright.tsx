@@ -1,14 +1,12 @@
 import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
-import React from "react";
+import Typography, {TypographyProps} from "@mui/material/Typography";
 
-type TypographyProps = React.ComponentProps<typeof Typography>;
 const Copyright = (props: TypographyProps) => {
   return (
     <Typography
       variant="body2"
       color="text.secondary"
-      align="center"
+      align="right"
       {...props}
     >
       {"Copyright © "}
