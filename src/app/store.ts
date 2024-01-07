@@ -11,13 +11,15 @@ import {
 } from "redux-persist";
 import configReducer from "../features/config/configSlice";
 import authReducer from "../features/auth/authSlice";
+import registerReucer from "../features/register/registerSlice";
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["config", "auth", "register"],
 };
-// Use different key for each reducer in the future
+
 // !IMPORTANT: filter status key
 const configPersistConfig = {
   key: "config",
@@ -28,15 +30,22 @@ const configPersistConfig = {
 const AuthPersistConfig = {
   key: "auth",
   storage,
-  blacklist: ["status", "user"],
+  blacklist: ["status", "isAuthenticated", "user", "error"],
 };
 
-const rootReducer = combineReducers({
+const RegisterPersistConfig = {
+  key: "register",
+  storage,
+  blacklist: ["status", "error"],
+};
+
+const RootReducer = combineReducers({
   config: persistReducer(configPersistConfig, configReducer),
   auth: persistReducer(AuthPersistConfig, authReducer),
+  register: persistReducer(RegisterPersistConfig, registerReucer),
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, RootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
