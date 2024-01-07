@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useEffect } from "react";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -25,10 +25,20 @@ import ExtensionIcon from "@mui/icons-material/Extension";
 import ShieldIcon from "@mui/icons-material/Shield";
 import OfflineBoltIcon from "@mui/icons-material/OfflineBolt";
 import PersonIcon from "@mui/icons-material/Person";
-import { Link, useNavigate } from "react-router-dom";
-import { ColorModeContext } from "./Layout";
-import { useAppSelector } from "../app/hook";
-import { selectFinished } from "../features/auth/authSlice";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+// import { ColorModeContext } from "./Layout";
+import {
+  useAlert,
+  useAppDispatch,
+  useAppSelector,
+  useColorMode,
+} from "../app/hook";
+import {
+  selectError,
+  selectIsAuthenticated,
+  selectStatus,
+  userLogout,
+} from "../features/auth/authSlice";
 
 export const drawerWidth = 200;
 
@@ -71,25 +81,47 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-//type BoxProps = React.ComponentProps<typeof Box>;
-
 const MenuAppBar = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
-  const colorMode = useContext(ColorModeContext);
-  //
-  //const [auth, setAuth] = useState(false);
-  const auth = useAppSelector(selectFinished);
-  const [open, setOpen] = useState(false);
-  const [anchorUserEl, setAnchorUserEl] = useState<null | HTMLElement>(null);
-  //
+  const colorMode = useColorMode();
+  const alert = useAlert();
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setAuth(event.target.checked);
-  // };
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { pathname } = useLocation();
+
+  const auth = useAppSelector(selectIsAuthenticated);
+  const authError = useAppSelector(selectError);
+  const authStatus = useAppSelector(selectStatus);
+
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [anchorUserEl, setAnchorUserEl] = useState<null | HTMLElement>(null);
+
+  useEffect(() => {
+    console.log("appbar(authStatus):", authStatus);
+    // Only alert logout error
+    const blacklist = ["/login", "/register"];
+    if (!blacklist.includes(pathname) && authStatus === "failed") {
+      alert(`Authentication Error: ${authError!}`, "error");
+      console.error("appbar(authError):", authError);
+    }
+  }, [authStatus, authError]);
+
+  useEffect(() => {
+    console.log("appbar(auth):", auth);
+    if (typeof auth === "undefined") {
+      return;
+    }
+    alert(auth ? "Welcome Back!" : "Logged Out");
+    if (!auth) {
+      navigate("/login", {
+        replace: true,
+      });
+    }
+  }, [auth]);
 
   const toggleDrawer = () => {
-    setOpen(!open);
+    setOpenDrawer(!openDrawer);
   };
 
   const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -105,33 +137,33 @@ const MenuAppBar = () => {
   };
 
   const DrawerItems = {
-    "Server": {
+    Server: {
       authRequired: true,
       icon: StorageIcon,
       callback: () => navigate("/server"),
     },
-    "Plugin": {
+    Plugin: {
       authRequired: true,
       icon: ExtensionIcon,
       callback: () => navigate("/plugin"),
     },
-    "Security": {
+    Security: {
       authRequired: true,
       icon: ShieldIcon,
       callback: () => navigate("/security"),
     },
-    "Status": {
+    Status: {
       authRequired: true,
       icon: OfflineBoltIcon,
       callback: () => navigate("/status"),
     },
     // admin management
-    "User": {
+    User: {
       authRequired: true,
       icon: ManageAccountsIcon,
       callback: () => navigate("/user"),
     },
-    "Settings": {
+    Settings: {
       authRequired: true,
       icon: SettingsIcon,
       callback: () => navigate("/settings"),
@@ -162,11 +194,27 @@ const MenuAppBar = () => {
     >
       {auth ? (
         <div>
-          <MenuItem onClick={handleUserClose}>Profile</MenuItem>
-          <MenuItem onClick={handleUserClose}>My account</MenuItem>
+          {/*// todo: profile card, with name and role*/}
+          {/*<MenuItem onClick={handleUserClose}>Profile</MenuItem>*/}
+          {/*<MenuItem onClick={handleUserClose}>My account</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              dispatch(userLogout());
+              handleUserClose();
+            }}
+          >
+            Logout
+          </MenuItem>
         </div>
       ) : (
-        <MenuItem onClick={handleUserClose}>Sign in</MenuItem>
+        <MenuItem
+          onClick={() => {
+            navigate("/login");
+            handleUserClose();
+          }}
+        >
+          Sign in
+        </MenuItem>
       )}
     </Menu>
   );
@@ -205,6 +253,8 @@ const MenuAppBar = () => {
                 ? auth
                   ? "block"
                   : "none"
+                : auth
+                ? "none"
                 : "block",
             }}
             onClick={params.callback}
@@ -212,21 +262,24 @@ const MenuAppBar = () => {
             <ListItemButton
               sx={{
                 minHeight: 48,
-                justifyContent: open ? "initial" : "center",
+                justifyContent: openDrawer ? "initial" : "center",
                 px: 2.5,
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: open ? 3 : "auto",
+                  mr: openDrawer ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
                 {<params.icon />}
                 {/* {renderDrawerItemIcons(text)} */}
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText
+                primary={text}
+                sx={{ opacity: openDrawer ? 1 : 0 }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -235,7 +288,7 @@ const MenuAppBar = () => {
   );
 
   return (
-    <Box sx={{ display: "flex"}}>
+    <Box sx={{ display: "flex" }}>
       <AppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -257,7 +310,7 @@ const MenuAppBar = () => {
             variant="h6"
             noWrap
             color="#FFFFFF"
-            component={Link}
+            component={RouterLink}
             to="/"
             replace
             sx={{
@@ -275,10 +328,10 @@ const MenuAppBar = () => {
         </Toolbar>
       </AppBar>
       <Drawer
-        hidden={!auth && !open}
+        hidden={!auth && !openDrawer}
         variant={auth ? "permanent" : "persistent"}
         anchor="left"
-        open={open}
+        open={openDrawer}
       >
         <Toolbar />
         {renderDrawerItems}

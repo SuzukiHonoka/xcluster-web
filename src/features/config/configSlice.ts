@@ -1,8 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
+import {createSlice} from "@reduxjs/toolkit";
+import {RootState} from "../../app/store";
 
-interface ConfigState{
-    darkMode?: boolean
+interface ConfigState {
+    darkMode?: boolean // client side
+    allowRegister?: boolean // server side
     status: string
     error?: string
 }
@@ -10,8 +11,8 @@ interface ConfigState{
 // cache
 const initialState: ConfigState = {
     darkMode: undefined, // undefined => system preference, false => daylight mode, true => dark mode
+    allowRegister: true,
     status: "idle", //'idle' | 'loading' | 'succeeded' | 'failed'
-    error: undefined
 }
 
 export const configSlice = createSlice({
@@ -22,11 +23,11 @@ export const configSlice = createSlice({
             // todo: login request
             if (typeof state.darkMode === "undefined") {
                 state.darkMode = true
-            }else{
+            } else {
                 state.darkMode = !state.darkMode
             }
         },
-        setDarkMode: (state, action) => { 
+        setDarkMode: (state, action) => {
             state.darkMode = action.payload
             console.log(`set darkMode: ${action.payload}`);
         }
