@@ -13,9 +13,8 @@ import {Link as RouterLink, useNavigate} from "react-router-dom";
 import * as yup from "yup";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {useAlert, useAppDispatch, useAppSelector} from "../app/hook.ts";
+import {useAppDispatch, useAppSelector} from "../app/hook.ts";
 import {
-    selectError,
     selectIsAuthenticated,
     selectStatus,
     setRemember,
@@ -37,27 +36,16 @@ type Inputs = {
 export default function SignIn() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const alert = useAlert();
 
     const [rememberChecked, setRememberChecked] = useState(false);
-
     const auth = useAppSelector(selectIsAuthenticated);
-    const authError = useAppSelector(selectError);
     const authStatus = useAppSelector(selectStatus);
 
     useEffect(() => {
-        console.log("signin(auth):", auth);
+        console.log("signing(auth):", auth);
         if (auth) navigate("/");
     }, [auth, navigate]);
 
-    useEffect(() => {
-        console.log("signin(authStatus):", authStatus);
-        // only show failed pop
-        if (authStatus === "failed") {
-            alert(`Authentication Error: ${authError!}`, "error");
-            console.log("auth failed:", authError);
-        }
-    }, [authStatus, alert, authError]);
 
     const schema = yup.object({
         email: yup.string().required().email(),

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -25,18 +25,14 @@ import ExtensionIcon from "@mui/icons-material/Extension";
 import ShieldIcon from "@mui/icons-material/Shield";
 import OfflineBoltIcon from "@mui/icons-material/OfflineBolt";
 import PersonIcon from "@mui/icons-material/Person";
-import {Link as RouterLink, useLocation, useNavigate} from "react-router-dom";
-// import { ColorModeContext } from "./Layout";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {
-    useAlert,
     useAppDispatch,
     useAppSelector,
     useColorMode,
 } from "../app/hook";
 import {
-    selectError,
     selectIsAuthenticated,
-    selectStatus,
     userLogout,
 } from "../features/auth/authSlice";
 
@@ -64,7 +60,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 });
 
 const Drawer = styled(MuiDrawer, {
-    // commented since it may block smooth transition and casuing not showing behaviour
+    // commented since it may block smooth transition and causing not showing behaviour
     //shouldForwardProp: (prop) => prop !== "open",
 })(({theme, open}) => ({
     width: drawerWidth,
@@ -84,41 +80,13 @@ const Drawer = styled(MuiDrawer, {
 const MenuAppBar = () => {
     const theme = useTheme();
     const colorMode = useColorMode();
-    const alert = useAlert();
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const {pathname} = useLocation();
-
     const auth = useAppSelector(selectIsAuthenticated);
-    const authError = useAppSelector(selectError);
-    const authStatus = useAppSelector(selectStatus);
 
     const [openDrawer, setOpenDrawer] = useState(false);
     const [anchorUserEl, setAnchorUserEl] = useState<null | HTMLElement>(null);
-
-    useEffect(() => {
-        console.log("appbar(authStatus):", authStatus);
-        // Only alert logout error
-        const blacklist = ["/login", "/register"];
-        if (!blacklist.includes(pathname) && authStatus === "failed") {
-            alert(`Authentication Error: ${authError!}`, "error");
-            console.error("appbar(authError):", authError);
-        }
-    }, [authStatus, alert, authError, pathname]);
-
-    useEffect(() => {
-        console.log("appbar(auth):", auth);
-        if (typeof auth === "undefined") {
-            return;
-        }
-        alert(auth ? "Welcome Back!" : "Logged Out");
-        if (!auth) {
-            navigate("/login", {
-                replace: true,
-            });
-        }
-    }, [auth, alert, navigate]);
 
     const toggleDrawer = () => {
         setOpenDrawer(!openDrawer);
@@ -226,18 +194,20 @@ const MenuAppBar = () => {
                     {theme.palette.mode === "dark" ? <DarkModeIcon/> : <LightModeIcon/>}
                 </IconButton>
             </Tooltip>
-            <Tooltip title="User">
-                <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleUserMenu}
-                    color="inherit"
-                >
-                    <AccountCircle/>
-                </IconButton>
-            </Tooltip>
+            {
+                auth && (<Tooltip title="User">
+                    <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="true"
+                        onClick={handleUserMenu}
+                        color="inherit"
+                    >
+                        <AccountCircle/>
+                    </IconButton>
+                </Tooltip>)
+            }
         </Box>
     );
 

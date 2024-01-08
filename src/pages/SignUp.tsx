@@ -14,7 +14,7 @@ import * as yup from "yup";
 import {useAlert, useAppDispatch, useAppSelector} from "../app/hook";
 import {selectIsAuthenticated} from "../features/auth/authSlice";
 import {
-    reset,
+    resetStatus,
     selectError,
     selectStatus,
     userRegister,
@@ -45,7 +45,7 @@ export default function SignUp() {
 
     useEffect(() => {
         console.log("signup(registerStatus):", registerStatus);
-        if (registerStatus === "loading") return;
+        if (["idle", "loading"].includes(registerStatus)) return;
         if (registerStatus === "succeeded") {
             alert("Registration success");
             navigate("/login", {
@@ -54,7 +54,10 @@ export default function SignUp() {
         } else if (registerStatus === "failed") {
             alert(`Registration Error: ${registerError}`, "error");
         }
-        dispatch(reset());
+        // reset registration state
+        return () => {
+            dispatch(resetStatus());
+        };
     }, [registerStatus, alert, dispatch, navigate, registerError]);
 
     const schema = yup.object({
