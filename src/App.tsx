@@ -1,6 +1,13 @@
-import {Routes, Route, Navigate, useNavigate} from "react-router-dom";
+import {
+    Routes,
+    Route,
+    Navigate,
+    useNavigate,
+    Outlet,
+    useLocation,
+} from "react-router-dom";
 import Layout from "./components/Layout";
-import Dashboard from "./pages/Dashboard.tsx";
+import DashboardHome from "./pages/dashboard/Home.tsx";
 import "./App.css";
 import PageNotFound from "./pages/PageNotFound";
 import SignIn from "./pages/SignIn.tsx";
@@ -11,7 +18,8 @@ import {
     selectRemember,
     userRecovery,
     userLogout,
-    reset, selectIsAuthenticated,
+    reset,
+    selectIsAuthenticated,
 } from "./features/auth/authSlice.ts";
 import {request} from "./app/api.ts";
 import {useState, useEffect, useMemo, useRef} from "react";
@@ -19,11 +27,12 @@ import {APIResponse} from "./models/api.ts";
 
 function App() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
 
-    const isMountingRef = useRef(true)
+    const isMountingRef = useRef(true);
 
-    const auth = useAppSelector(selectIsAuthenticated)
+    const auth = useAppSelector(selectIsAuthenticated);
     const shouldRecoveryUserState = useAppSelector(selectRemember);
     const [wait, setWait] = useState(shouldRecoveryUserState);
 
@@ -47,15 +56,15 @@ function App() {
                 //console.error("apiRequest.interceptors:", error);
                 if (error.response?.status === 401) {
                     dispatch(reset());
-                    // enforcing redirect
+                    // enforcing redirect, provide the state so that user can go back
                     navigate("/login", {
-                        replace: true,
+                        state: {from: location},
                     });
                 }
                 return Promise.reject(error);
             }
         );
-    }, [dispatch, navigate]);
+    }, [dispatch, location, navigate]);
 
     // Conditionally trigger user recovery
     useEffect(() => {
@@ -67,14 +76,14 @@ function App() {
             }
         })();
         return () => {
-            isMountingRef.current = false
-        }
+            isMountingRef.current = false;
+        };
     }, [dispatch, shouldRecoveryUserState]);
 
     // Trigger user logout if page is going to be unloaded (refresh)
     useEffect(() => {
         const handleLogout = () => {
-            if (!auth) return
+            if (!auth) return;
             if (!shouldRecoveryUserState) dispatch(userLogout());
         };
         window.addEventListener("beforeunload", handleLogout);
@@ -89,16 +98,16 @@ function App() {
                 <Route index element={<Navigate to="/dashboard" replace/>}/>
                 <Route path="login" element={<SignIn/>}/>
                 <Route path="register" element={<SignUp/>}/>
-                <Route
-                    path="dashboard"
-                    element={<AuthRequired to="/login" element={<Dashboard/>}/>}
-                />
+                <Route path="dashboard" element={<AuthRequired element={<Outlet/>}/>}>
+                    <Route index element={<Navigate to="home"/>}/>
+                    <Route path="home" element={<DashboardHome/>}/>
+                </Route>
                 <Route path="*" element={<PageNotFound/>}/>
             </Route>
         </Routes>
     );
 
-    return <> {!wait && (renderRoutes)}</>;
+    return <> {!wait && renderRoutes}</>;
 }
 
 export default App;
