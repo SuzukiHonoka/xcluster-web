@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -29,6 +28,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector, useColorMode } from "../app/hook";
 import { selectIsAuthenticated, userLogout } from "../features/auth/authSlice";
+import Link from "@mui/material/Link";
 
 export const drawerWidth = 200;
 
@@ -72,6 +72,9 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 const MenuAppBar = () => {
+  // {/*// todo: profile card, with name and role*/}
+  // {/*<MenuItem onClick={handleUserClose}>Profile</MenuItem>*/}
+  // {/*<MenuItem onClick={handleUserClose}>My account</MenuItem>*/}
   const theme = useTheme();
   const colorMode = useColorMode();
 
@@ -92,6 +95,16 @@ const MenuAppBar = () => {
 
   const handleUserClose = () => {
     setAnchorUserEl(null);
+  };
+
+  const handleUserLogout = () => {
+    dispatch(userLogout());
+    handleUserClose();
+  };
+
+  const handleUserLogin = () => {
+    navigate("/login");
+    handleUserClose();
   };
 
   const handleColorModeToggle = () => {
@@ -160,28 +173,9 @@ const MenuAppBar = () => {
       onClose={handleUserClose}
     >
       {auth ? (
-        <div>
-          {/*// todo: profile card, with name and role*/}
-          {/*<MenuItem onClick={handleUserClose}>Profile</MenuItem>*/}
-          {/*<MenuItem onClick={handleUserClose}>My account</MenuItem>*/}
-          <MenuItem
-            onClick={() => {
-              dispatch(userLogout());
-              handleUserClose();
-            }}
-          >
-            Logout
-          </MenuItem>
-        </div>
+        <MenuItem onClick={handleUserLogout}>Logout</MenuItem>
       ) : (
-        <MenuItem
-          onClick={() => {
-            navigate("/login");
-            handleUserClose();
-          }}
-        >
-          Sign in
-        </MenuItem>
+        <MenuItem onClick={handleUserLogin}>Sign in</MenuItem>
       )}
     </Menu>
   );
@@ -257,7 +251,7 @@ const MenuAppBar = () => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box display="flex">
       <AppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -275,21 +269,20 @@ const MenuAppBar = () => {
               <MenuIcon />
             </IconButton>
           </Tooltip>
-          <Typography
+          <Link
             variant="h6"
-            noWrap
-            color="#FFFFFF"
+            underline="none"
+            color="white"
             component={RouterLink}
             to="/"
             replace
             sx={{
               flexGrow: 1,
-              textDecoration: "none",
             }}
           >
             {/* todo: configurable website title */}
             Xcluster
-          </Typography>
+          </Link>
           <div>
             {renderMenu}
             {renderUserMenu}
