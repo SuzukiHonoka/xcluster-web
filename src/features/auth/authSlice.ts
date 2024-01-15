@@ -5,10 +5,10 @@ import {User} from "../../models/user";
 import {APIResponse} from "../../models/api.ts";
 
 interface AuthState {
-    isAuthenticated?: boolean; // do not cache this!!
-    remember?: boolean;
-    error?: string; // do not cache this!!
-    user?: User; // do not cache this!!
+    isAuthenticated?: boolean;
+    remember?: boolean; // cache this
+    user?: User;
+    error?: string;
     status: string; //'idle' | 'loading' | 'succeeded' | 'failed'
 }
 
@@ -119,6 +119,7 @@ export const selectIsAuthenticated = (state: RootState) =>
     state.auth.isAuthenticated;
 export const selectError = (state: RootState) => state.auth.error;
 export const selectStatus = (state: RootState) => state.auth.status;
+export const selectIsAdmin = (state: RootState) => state.auth.user?.groupID === 1
 
 export const {setRemember, reset, resetStatus} = authSlice.actions;
 

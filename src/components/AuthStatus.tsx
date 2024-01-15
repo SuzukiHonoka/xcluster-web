@@ -14,7 +14,6 @@ const AuthStatus = () => {
 
     useEffect(() => {
         console.log("authStatus:", authStatus);
-        if (["idle", "loading"].includes(authStatus)) return;
         // show failed errors
         if (authStatus === "failed") {
             alert(`Authentication Error: ${authError!}`, "error");

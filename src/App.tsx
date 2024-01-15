@@ -26,6 +26,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { APIResponse } from "./models/api.ts";
 import ServerGrid from "./pages/dashboard/ServerGrid.tsx";
 import ServerControl from "./pages/dashboard/ServerControl.tsx";
+import UserManage from "./pages/dashboard/UserManage.tsx";
 
 function App() {
   const navigate = useNavigate();
@@ -105,6 +106,7 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="server" element={<ServerGrid />} />
           <Route path="server/:id" element={<ServerControl />} />
+          <Route path="user" element={<UserManage />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Route>
