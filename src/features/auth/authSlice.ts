@@ -120,6 +120,7 @@ export const selectIsAuthenticated = (state: RootState) =>
 export const selectError = (state: RootState) => state.auth.error;
 export const selectStatus = (state: RootState) => state.auth.status;
 export const selectIsAdmin = (state: RootState) => state.auth.user?.groupID === 1
+export const selectUser = (state: RootState) => state.auth.user
 
 export const {setRemember, reset, resetStatus} = authSlice.actions;
 
