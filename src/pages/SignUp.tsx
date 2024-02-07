@@ -64,15 +64,19 @@ export default function SignUp() {
   const schema = yup.object({
     email: yup.string().required().email(),
     name: yup.string().required(),
-    password: yup.string().required().min(8),
-    // !!IMPORTANT: MUST ADD FOLLOWING VALIDATORS IN PRODUCTION BUILD
-    // .matches(
-    //     // At least one letter, one number and one special character:
-    //     ///^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&].*$/,
-    //     // At least one letter, one number:
-    //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d].*$/,
-    //     "Password should contain at least one letter, one number."
-    // ),
+    password: yup
+      .string()
+      .required()
+      .min(8)
+      // !!IMPORTANT: MUST ADD FOLLOWING VALIDATORS IN PRODUCTION BUILD
+      .matches(
+        // At least one letter, one number and one special character:
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&].*$/,
+        "Password should contain at least one letter, one number and one special character。"
+        // At least one letter, one number:
+        ///^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d].*$/,
+        //"Password should contain at least one letter, one number."
+      ),
     passwordConfirmation: yup
       .string()
       .required()

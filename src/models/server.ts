@@ -7,10 +7,11 @@ export type Specification = {
 }
 
 export type Server = {
-    id: number;
+    id: string;
     name: string;
     groupID: number;
-    specification: Specification;
+    specification?: Specification; // optional: detailed specs
+    specs: string
     ip: string,
     online: boolean,
 };

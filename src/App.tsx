@@ -27,6 +27,8 @@ import { APIResponse } from "./models/api.ts";
 import ServerGrid from "./pages/dashboard/ServerGrid.tsx";
 import ServerControl from "./pages/dashboard/ServerControl.tsx";
 import UserManage from "./pages/dashboard/UserManage.tsx";
+import PluginManage from "./pages/dashboard/PluginManage.tsx";
+import Security from "./pages/dashboard/Security.tsx";
 
 function App() {
   const navigate = useNavigate();
@@ -107,6 +109,8 @@ function App() {
           <Route path="server" element={<ServerGrid />} />
           <Route path="server/:id" element={<ServerControl />} />
           <Route path="user" element={<UserManage />} />
+          <Route path="plugin" element={<PluginManage />} />
+          <Route path="security" element={<Security />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Route>

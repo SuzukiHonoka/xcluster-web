@@ -5,6 +5,9 @@ import TabPanel from "./TabPanel";
 import Typography from "@mui/material/Typography";
 import Tab from "@mui/material/Tab";
 import React, { useState } from "react";
+import Access from "./plugin/Access";
+import Networking from "./plugin/Networking";
+import SSHkey from "./plugin/SSHkey";
 
 export interface PluginProps {
   id: string;
@@ -17,10 +20,10 @@ type Plugin = {
 
 const plugins: Plugin[] = [
   { name: "Usage", render: Usage },
-  { name: "Access", render: undefined },
-  { name: "SSH Keys", render: undefined },
-  { name: "Networking", render: undefined },
-  { name: "Opts...", render: undefined },
+  { name: "Access", render: Access },
+  { name: "SSH Keys", render: SSHkey },
+  { name: "Networking", render: Networking },
+  //{ name: "Opts...", render: undefined },
 ];
 
 function a11yProps(index: number) {

@@ -16,19 +16,20 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import SettingsIcon from "@mui/icons-material/Settings";
+//import SettingsIcon from "@mui/icons-material/Settings";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import StorageIcon from "@mui/icons-material/Storage";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import ShieldIcon from "@mui/icons-material/Shield";
-import OfflineBoltIcon from "@mui/icons-material/OfflineBolt";
+//import OfflineBoltIcon from "@mui/icons-material/OfflineBolt";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector, useColorMode } from "../app/hook";
 import { selectIsAuthenticated, userLogout } from "../features/auth/authSlice";
 import Link from "@mui/material/Link";
+import { Stack, Typography } from "@mui/material";
 
 export const drawerWidth = 200;
 
@@ -132,22 +133,21 @@ const MenuAppBar = () => {
       icon: ShieldIcon,
       callback: () => navigate("/dashboard/security"),
     },
-    Status: {
-      authRequired: true,
-      icon: OfflineBoltIcon,
-      callback: () => navigate("/dashboard/status"),
-    },
-    // admin management
+    // Status: {
+    //   authRequired: true,
+    //   icon: OfflineBoltIcon,
+    //   callback: () => navigate("/dashboard/status"),
+    // },
     User: {
       authRequired: true,
       icon: ManageAccountsIcon,
       callback: () => navigate("/dashboard/user"),
     },
-    Settings: {
-      authRequired: true,
-      icon: SettingsIcon,
-      callback: () => navigate("/dashboard/settings"),
-    },
+    // Settings: {
+    //   authRequired: true,
+    //   icon: SettingsIcon,
+    //   callback: () => navigate("/dashboard/settings"),
+    // },
     //
     "Sign in": {
       authRequired: false,
@@ -276,17 +276,18 @@ const MenuAppBar = () => {
             component={RouterLink}
             to="/"
             replace
-            sx={{
-              flexGrow: 1,
-            }}
           >
             {/* todo: configurable website title */}
             Xcluster
           </Link>
-          <div>
+          <Typography ml={1} variant="subtitle1" color="white">
+            {/* todo: configurable website subtitle */}
+            {"- Next Generation Cluster Controlling System"}
+          </Typography>
+          <Stack flexGrow={1} direction="row" justifyContent="flex-end">
             {renderMenu}
             {renderUserMenu}
-          </div>
+          </Stack>
         </Toolbar>
       </AppBar>
       <Drawer

@@ -13,12 +13,15 @@ import configReducer from "../features/config/configSlice";
 import authReducer from "../features/auth/authSlice";
 import registerReducer from "../features/register/registerSlice";
 import usersReducer from "../features/users/usersSlice.ts";
+import pluginsReducer from "../features/plugins/pluginsSlice.ts";
+import serversReducer from "../features/server/serverSlice.ts"
+import aclsReducer from "../features/acls/aclsSlice.ts"
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
     key: "root",
     storage,
-    blacklist: ["config", "auth", "register", "users"],
+    blacklist: ["config", "auth", "register", "users", "plugins", "servers"],
 };
 
 // !IMPORTANT: filter status key
@@ -31,7 +34,7 @@ const configPersistConfig = {
 const AuthPersistConfig = {
     key: "auth",
     storage,
-    blacklist: ["status", "isAuthenticated", "user", "error"],
+    blacklist: ["status", "error", "isAuthenticated", "user"],
 };
 
 const RegisterPersistConfig = {
@@ -46,11 +49,32 @@ const UsersPersistConfig = {
     blacklist: ["status", "error", "users"],
 };
 
+const PluginsPersistConfig = {
+    key: "plugins",
+    storage,
+    blacklist: ["status", "error", "data"], // "plugins"
+}
+
+const ServersPersistConfig = {
+    key: "servers",
+    storage,
+    blacklist: ["status", "error"], // "servers"
+}
+
+const AclsPersistConfig = {
+    key: "acls",
+    storage,
+    blacklist: ["status", "error"], // "acls"
+}
+
 const RootReducer = combineReducers({
     config: persistReducer(configPersistConfig, configReducer),
     auth: persistReducer(AuthPersistConfig, authReducer),
     register: persistReducer(RegisterPersistConfig, registerReducer),
-    users: persistReducer(UsersPersistConfig, usersReducer)
+    users: persistReducer(UsersPersistConfig, usersReducer),
+    plugins: persistReducer(PluginsPersistConfig, pluginsReducer),
+    servers: persistReducer(ServersPersistConfig, serversReducer),
+    acls: persistReducer(AclsPersistConfig, aclsReducer),
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducer);
